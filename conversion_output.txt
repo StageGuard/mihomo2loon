@@ -1,0 +1,51 @@
+--- CONVERSION RESULT ---
+[General]
+ipv6 = true
+allow-wifi-access = true
+
+[Proxy]
+socks = Socks5,server,443
+http = http,server,443
+ss1 = Shadowsocks,server,443,chacha20-ietf-poly1305,"password"
+ss2 = Shadowsocks,server,443,chacha20-ietf-poly1305,"password",obfs-name=tls
+ss3 = Shadowsocks,server,443,chacha20-ietf-poly1305,"password"
+ss4-shadow-tls = Shadowsocks,server,443,chacha20-ietf-poly1305,"password"
+ss5 = Shadowsocks,server,443,chacha20-ietf-poly1305,"password"
+ss-restls-tls13 = Shadowsocks,YOUR_SERVER_IP,443,chacha20-ietf-poly1305,"YOUR_SS_PASSWORD"
+ss-restls-tls12 = Shadowsocks,YOUR_SERVER_IP,443,chacha20-ietf-poly1305,"YOUR_SS_PASSWORD"
+ss-kcptun = Shadowsocks,YOUR_SERVER_IP,443,chacha20-ietf-poly1305,"YOUR_SS_PASSWORD"
+vmess = vmess,server,443,auto,"uuid"
+vmess-h2 = vmess,server,443,auto,"uuid",transport=h2,over-tls=true
+vmess-http = vmess,server,443,auto,"uuid"
+vmess-grpc = vmess,server,443,auto,"uuid",transport=grpc,over-tls=true,tls-name=example.com,service-name=example
+vless-tcp = VLESS,server,443,"uuid",transport=tcp,tls-name=example.com
+vless-vision = VLESS,server,443,"uuid",udp=true,transport=tcp,over-tls=true,flow=xtls-rprx-vision
+vless-encryption = VLESS,server,443,"uuid",udp=true,transport=tcp
+vless-reality-vision = VLESS,server,443,"uuid",udp=true,transport=tcp,over-tls=true,tls-name=www.microsoft.com,flow=xtls-rprx-vision,reality-public-key=xxx,reality-short-id=xxx
+vless-reality-grpc = VLESS,server,443,"uuid",udp=true,transport=grpc,over-tls=true,tls-name=testingcf.jsdelivr.net,service-name=grpc,reality-public-key=CrrQSjAG_YkHLwvM2M-7XkKJilgL5upBKCp0od0tLhE,reality-short-id=10f897e26c4b9478
+vless-ws = VLESS,server,443,"uuid",udp=true,transport=ws,over-tls=true,tls-name=example.com,path=/,host=example.com
+trojan = trojan,server,443,"yourpsk"
+trojan-grpc = trojan,server,443,"example",udp=true,tls-name=example.com
+trojan-ws = trojan,server,443,"example",udp=true,tls-name=example.com
+trojan-xtls = trojan,server,443,"yourpsk"
+
+[Proxy Group]
+relay = select,http,vmess,ss1,ss2
+auto = url-test,ss1,ss2,vmess1,url=https://cp.cloudflare.com/generate_204,interval=300
+fallback-auto = fallback,ss1,ss2,vmess1,url=https://cp.cloudflare.com/generate_204,interval=300
+load-balance = load-balance,ss1,ss2,vmess1,url=https://cp.cloudflare.com/generate_204,interval=300,algorithm=Random
+Proxy = select,ss1,ss2,vmess1,auto
+UseProvider = select,Proxy,DIRECT
+
+[Rule]
+# Unknown rule: RULE-SET,rule1,REJECT
+# Unknown rule: IP-ASN,1,PROXY
+# Unknown rule: DOMAIN-REGEX,^abc,DIRECT
+DOMAIN-SUFFIX,baidu.com,DIRECT
+DOMAIN-KEYWORD,google,ss1
+# Unknown rule: DOMAIN-WILDCARD,test.*.mihomo.com,ss1
+IP-CIDR,1.1.1.1/32,ss1
+IP-CIDR6,2409::/64,DIRECT
+# Unknown rule: SUB-RULE,(OR,((NETWORK,TCP),(NETWORK,UDP))),sub-rule-name1
+# Unknown rule: SUB-RULE,(AND,((NETWORK,UDP))),sub-rule-name2
+--- END RESULT ---

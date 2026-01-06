@@ -1,0 +1,9 @@
+[submodule "docs/domain-list-community"]
+	path = docs/domain-list-community
+	url = https://github.com/v2fly/domain-list-community.git
+[submodule "docs/Meta-Docs"]
+	path = docs/Meta-Docs
+	url = https://github.com/metaCubeX/Meta-Docs.git
+[submodule "docs/LoonManual"]
+	path = docs/LoonManual
+	url = https://github.com/loon0x00/LoonManual.git

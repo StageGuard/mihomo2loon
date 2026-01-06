@@ -137,3 +137,9 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# My private files
+my_mihomo_config.yaml
+my_loon_config.ini
+package-lock.json
+verify_my_config.js
