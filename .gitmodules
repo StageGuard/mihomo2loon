@@ -7,3 +7,6 @@
 [submodule "docs/Loon0x00.github.io"]
 	path = docs/Loon0x00.github.io
 	url = https://github.com/Loon0x00/Loon0x00.github.io.git
+[submodule "docs/LoonExampleConfig"]
+	path = docs/LoonExampleConfig
+	url = https://github.com/Loon0x00/LoonExampleConfig.git
