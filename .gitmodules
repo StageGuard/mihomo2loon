@@ -4,6 +4,3 @@
 [submodule "docs/Meta-Docs"]
 	path = docs/Meta-Docs
 	url = https://github.com/metaCubeX/Meta-Docs.git
-[submodule "docs/LoonManual"]
-	path = docs/LoonManual
-	url = https://github.com/loon0x00/LoonManual.git
