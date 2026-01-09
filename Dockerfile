@@ -16,6 +16,9 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Remove the broken submodule integration to force fresh clone on start
+RUN rm -rf docs/domain-list-community
+
 # Expose the port the app runs on
 EXPOSE 8080
 

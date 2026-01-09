@@ -157,3 +157,12 @@ What about security of route /geosite/:name.list .What will happened if I get /g
 ### 17
 
 生成一个 项目的 README，记得介绍一下项目特色，例如动态 remote rule 和 plugins, 同时生成简体中文版, 放到 README.zh.md.
+
+### 18
+
+I run the project at docker, but cron scheduled job failed.
+
+```log
+[Cron] Git pull failed: Command failed: git pull
+fatal: not a git repository: /app/docs/domain-list-community/../../.git/modules/docs/domain-list-community
+```

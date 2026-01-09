@@ -11,29 +11,57 @@ const port = 8080;
 const CERT_DIR = path.join(__dirname, 'cert');
 const CA_PASSPHRASE = '9S25L0J0';
 const DOCS_DIR = path.join(__dirname, 'docs', 'domain-list-community');
+const DOCS_REPO_URL = 'https://github.com/v2fly/domain-list-community.git';
 
 // -------------------------------------------------------------------------
 // Git Update Logic
 // -------------------------------------------------------------------------
+
+function cloneRepo() {
+    console.log('[Cron] Cloning domain-list-community...');
+    exec(`git clone ${DOCS_REPO_URL} "${DOCS_DIR}"`, (err, stdout, stderr) => {
+        if (err) {
+            console.error('[Cron] Git clone failed:', err.message);
+            return;
+        }
+        console.log('[Cron] Git clone success:', stdout.trim());
+    });
+}
+
 function updateRepo() {
     console.log('[Cron] Updating domain-list-community...');
     exec('git pull', { cwd: DOCS_DIR }, (err, stdout, stderr) => {
         if (err) {
             console.error('[Cron] Git pull failed:', err.message);
+            // If pull fails (e.g. not a git repo), try re-cloning
+            // But be careful not to infinite loop if network is down.
+            // For now, simpler error logging is enough.
             return;
         }
         console.log('[Cron] Git pull success:', stdout.trim());
     });
 }
 
-// Initial update
-if (fs.existsSync(DOCS_DIR)) {
+// Initial update or clone
+if (fs.existsSync(DOCS_DIR) && fs.existsSync(path.join(DOCS_DIR, '.git'))) {
     updateRepo();
-    // Update every 4 hours (4 * 60 * 60 * 1000)
-    setInterval(updateRepo, 14400000);
 } else {
-    console.warn(`[Cron] Docs dir not found at ${DOCS_DIR}, skipping auto-update.`);
+    // If dir missing or not a git repo (missing .git), clone it
+    if (fs.existsSync(DOCS_DIR)) {
+        // Clean up broken/empty dir if exists but valid .git is missing
+        fs.rmSync(DOCS_DIR, { recursive: true, force: true });
+    }
+    cloneRepo();
 }
+
+// Schedule update
+setInterval(() => {
+    if (fs.existsSync(DOCS_DIR)) {
+        updateRepo();
+    } else {
+        cloneRepo();
+    }
+}, 14400000); // 4 hours
 
 // -------------------------------------------------------------------------
 // Routes
