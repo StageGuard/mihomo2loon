@@ -1,6 +1,9 @@
 # Use an official Node.js runtime as a parent image
 FROM node:18-alpine
 
+# Install git
+RUN apk add --no-cache git
+
 # Set the working directory
 WORKDIR /app
 
