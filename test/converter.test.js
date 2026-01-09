@@ -84,4 +84,31 @@ describe('Full Converter Integration', () => {
         // GEOSITE should NOT be in [Rule] (unless it was nested logic, which we skipped here)
         assert.ok(!result.match(/GEOSITE,google,Proxy/));
     });
+
+    it('should generate [Plugin] for DNS geosite policy', () => {
+        const input = {
+            rules: [],
+            dns: {
+                enable: true,
+                'nameserver-policy': {
+                    'geosite:cn': '114.114.114.114',
+                    'geosite:google': ['8.8.8.8', '8.8.4.4']
+                }
+            }
+        };
+        const options = {
+            baseUrl: 'http://localhost:8080'
+        };
+
+        const result = convert(input, options);
+
+        assert.ok(result.includes('[Plugin]'));
+        // check cn
+        assert.ok(result.includes('http://localhost:8080/plugin/geosite/cn?dns=114.114.114.114'));
+        assert.ok(result.includes('tag=geosite-cn'));
+        // check google (array)
+        // Order of query params depends on implementation, but usually preserves array order
+        assert.ok(result.includes('http://localhost:8080/plugin/geosite/google?dns=8.8.8.8&dns=8.8.4.4'));
+        assert.ok(result.includes('tag=geosite-google'));
+    });
 });

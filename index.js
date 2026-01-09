@@ -66,6 +66,81 @@ app.get('/geosite/:name.list', (req, res) => {
     }
 });
 
+app.get('/plugin/geosite/:name', (req, res) => {
+    const { name } = req.params;
+    const dnsQuery = req.query.dns;
+    console.log(`[Plugin] Request for geosite: ${name} with DNS: ${dnsQuery}`);
+
+    if (!dnsQuery) {
+        return res.status(400).send('# Missing dns query parameter');
+    }
+
+    const dnsServers = Array.isArray(dnsQuery) ? dnsQuery : [dnsQuery];
+    // Loon Host usually accepts one server. We'll pick the first one.
+    // If redundancy is needed, Loon might handle multiple lines for same domain? Use first for now.
+    const targetDNS = dnsServers[0];
+    const serverStr = `server:${targetDNS}`;
+
+    const host = req.get('host');
+    const geositeNames = name.split(',').map(s => s.trim()).filter(Boolean);
+
+    let allDomains = [];
+
+    try {
+        for (const gn of geositeNames) {
+            const domains = getGeositeDomains(gn);
+            if (domains) {
+                allDomains = allDomains.concat(domains);
+            }
+        }
+
+        if (allDomains.length === 0) {
+            return res.status(404).send('# No domains found for specified geosites');
+        }
+
+        const lines = [];
+        // Metadata
+        lines.push(`#!name= geosite-${name.replace(/,/g, '-')}`);
+        lines.push(`#!desc= Plugin for flatten geosite rules in DNS nameserver-policy of mihomo.`);
+        lines.push(`#!author= ${host}`);
+        lines.push(`#!homepage= https://github.com/StageGuard/mihomo2loon`);
+        lines.push(`#!icon= https://avatars.githubusercontent.com/u/84378451`);
+        lines.push(`#!tag = mihomo,geosite`);
+        lines.push(`#!date = ${new Date().toUTCString()}`);
+        lines.push('');
+        lines.push('[Host]');
+
+        const seen = new Set();
+        allDomains.forEach(d => {
+            // Avoid duplicates if multiple geosites contain same domain
+            const key = `${d.type}:${d.value}`;
+            if (seen.has(key)) return;
+            seen.add(key);
+
+            if (d.type === 'DOMAIN') {
+                lines.push(`${d.value} = ${serverStr}`);
+            } else if (d.type === 'DOMAIN-SUFFIX') {
+                // Map both wildcard and exact? Loon behavior:
+                // .example.com usually covers *.example.com and example.com?
+                // Wait, Loon syntax '.example.com' implies suffix. 
+                // But our getGeositeDomains returns 'value' without dot for suffix usually (check implementation).
+                // Implementation: 'google.com' for suffix.
+                // Loon format: "*.google.com = server:..."
+                lines.push(`*.${d.value} = ${serverStr}`);
+                lines.push(`${d.value} = ${serverStr}`);
+            }
+            // Skip keywords for Host rules
+        });
+
+        res.set('Content-Type', 'text/plain; charset=utf-8');
+        res.send(lines.join('\n'));
+
+    } catch (e) {
+        console.error(`[Plugin] Error serving ${name}:`, e.message);
+        res.status(500).send(`# Error: ${e.message}`);
+    }
+});
+
 app.get('/sub', async (req, res) => {
     const { url } = req.query;
 
