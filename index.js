@@ -251,7 +251,7 @@ app.get('/sub', async (req, res) => {
         const baseUrl = `${protocol}://${host}`;
 
         console.log('Converting config...');
-        const loonConfig = convert(mihomoConfig, { mitm: mitmOptions, baseUrl });
+        const loonConfig = convert(mihomoConfig, { mitm: mitmOptions, baseUrl, authKey: AUTH_KEY });
 
         res.set('Content-Type', 'text/plain; charset=utf-8');
         res.send(loonConfig);

@@ -107,8 +107,29 @@ describe('Full Converter Integration', () => {
         assert.ok(result.includes('http://localhost:8080/plugin/geosite/cn?dns=114.114.114.114'));
         assert.ok(result.includes('tag=geosite-cn'));
         // check google (array)
-        // Order of query params depends on implementation, but usually preserves array order
         assert.ok(result.includes('http://localhost:8080/plugin/geosite/google?dns=8.8.8.8&dns=8.8.4.4'));
         assert.ok(result.includes('tag=geosite-google'));
+    });
+
+    it('should append auth key to Plugin and Remote Rule URLs', () => {
+        const input = {
+            rules: ['GEOSITE,google,Proxy'],
+            dns: {
+                enable: true,
+                'nameserver-policy': { 'geosite:cn': '1.1.1.1' }
+            }
+        };
+        const options = {
+            baseUrl: 'http://localhost:8080',
+            authKey: 'testsecret'
+        };
+
+        const result = convert(input, options);
+
+        // Check Remote Rule
+        assert.ok(result.includes('http://localhost:8080/geosite/google.list?auth=testsecret,policy=Proxy'));
+
+        // Check Plugin
+        assert.ok(result.includes('http://localhost:8080/plugin/geosite/cn?dns=1.1.1.1&auth=testsecret'));
     });
 });

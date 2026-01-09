@@ -52,6 +52,21 @@ To keep your Loon configuration lightweight and up-to-date, Mihomo2Loon dynamica
     ```
     The server listens on port `8080`.
 
+### Authentication
+
+For security, all endpoints (except `/version`) are protected by an authentication key.
+
+-   **Environment Variable**: Set `SERVICE_AUTH_KEY` to define your own key.
+-   **Auto-Generation**: If not set, a random 32-character key is generated and printed to the console on startup.
+
+Append `?auth=YOUR_KEY` to all requests.
+
+Example:
+```
+http://localhost:8080/sub?url=...&auth=A1B2C3...
+```
+generated config will automatically include the auth key in `[Remote Rule]` and `[Plugin]` URLs.
+
 ### Converting Configuration
 
 Access the `/sub` endpoint with your Mihomo configuration URL:

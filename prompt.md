@@ -174,3 +174,7 @@ fatal: not a git repository: /app/docs/domain-list-community/../../.git/modules/
 key 从环境变量 SERVICE_AUTH_KEY 读取，如果没有则默认生成 32 位包含大写字母和数字的随机字符作为 key，需要在启动的时候将 key 显示在启动日志中。
 
 再增加一个 version 路由 "/version"，返回当前 git 的 HEAD 提交 hash 和时间，这个路由不需要 auth。
+
+### 20
+
+在配置订阅中引用的 server 的资源，plugin 和 remote rule 也要加上 auth key 否则无法访问。直接把 key 添加到链接里就行，因为既然我已经可以获取转换的配置，说明我是知道 auth key 的。
