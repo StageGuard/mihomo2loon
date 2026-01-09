@@ -112,7 +112,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/geosite/:name.list', (req, res) => {
+app.get('/rule/geosite/:name.list', (req, res) => {
     const { name } = req.params;
     console.log(`[Geosite] Request for: ${name}`);
 
