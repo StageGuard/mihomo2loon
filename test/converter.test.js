@@ -58,4 +58,30 @@ describe('Full Converter Integration', () => {
         assert.ok(result.includes('ca-p12 = base64data'));
         assert.ok(result.includes('hostname = *.example.com'));
     });
+
+    it('should generate Remote Rules for GEOSITEs', () => {
+        const input = {
+            rules: [
+                'GEOSITE,google,Proxy',
+                'GEOSITE,youtube,DIRECT',
+                'DOMAIN,example.com,Proxy'
+            ]
+        };
+        const options = {
+            baseUrl: 'http://localhost:8080'
+        };
+
+        const result = convert(input, options);
+
+        assert.ok(result.includes('[Remote Rule]'));
+        assert.ok(result.includes('http://localhost:8080/geosite/google.list,policy=Proxy,enabled=true,tag=google'));
+        assert.ok(result.includes('http://localhost:8080/geosite/youtube.list,policy=DIRECT,enabled=true,tag=youtube'));
+
+        // Standard rule should remain in [Rule]
+        assert.ok(result.includes('[Rule]'));
+        assert.ok(result.includes('DOMAIN,example.com,Proxy'));
+
+        // GEOSITE should NOT be in [Rule] (unless it was nested logic, which we skipped here)
+        assert.ok(!result.match(/GEOSITE,google,Proxy/));
+    });
 });
