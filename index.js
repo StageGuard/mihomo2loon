@@ -155,7 +155,7 @@ app.get('/plugin/geosite/:name', (req, res) => {
     const targetDNS = dnsServers[0];
     const serverStr = `server:${targetDNS}`;
 
-    const host = SERVICE_BASE_URL ? new URL(SERVICE_BASE_URL).hostname : req.get('host');
+    const host = BASE_URL ? new URL(BASE_URL).hostname : req.get('host');
     const geositeNames = name.split(',').map(s => s.trim()).filter(Boolean);
 
     let allDomains = [];
