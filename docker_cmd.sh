@@ -23,8 +23,6 @@ if [ -n "$AUTH_KEY" ]; then
 fi
 
 echo "Deploying Mihomo2Loon..."
-echo "Base URL: ${BASE_URL:-"(default)"}"
-echo "Auth Key: ${AUTH_KEY:-"(generated)"}"
 
 sudo docker stop mihomo2loon 2>/dev/null
 sudo docker build -t mihomo2loon .
