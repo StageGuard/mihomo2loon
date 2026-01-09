@@ -26,6 +26,7 @@ function generateAuthKey(length = 32) {
 }
 
 const AUTH_KEY = process.env.SERVICE_AUTH_KEY || generateAuthKey();
+const BASE_URL = process.env.SERVICE_BASE_URL;
 
 // -------------------------------------------------------------------------
 // Git Update Logic
@@ -248,7 +249,8 @@ app.get('/sub', async (req, res) => {
         // Base URL for Remote Rules
         const protocol = req.protocol;
         const host = req.get('host');
-        const baseUrl = `${protocol}://${host}`;
+        const rawBaseUrl = `${protocol}://${host}`;
+        const baseUrl = BASE_URL || rawBaseUrl;
 
         console.log('Converting config...');
         const loonConfig = convert(mihomoConfig, { mitm: mitmOptions, baseUrl, authKey: AUTH_KEY });
@@ -266,5 +268,6 @@ app.listen(port, () => {
     console.log(`Mihomo2Loon server listening at http://localhost:${port}`);
     console.log(`---------------------------------------------------`);
     console.log(`Auth Key: ${AUTH_KEY}`);
+    console.log(`Base URL: ${BASE_URL || "(request host)"}`);
     console.log(`---------------------------------------------------`);
 });
