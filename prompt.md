@@ -166,3 +166,11 @@ I run the project at docker, but cron scheduled job failed.
 [Cron] Git pull failed: Command failed: git pull
 fatal: not a git repository: /app/docs/domain-list-community/../../.git/modules/docs/domain-list-community
 ```
+
+### 19
+
+轻为所有的 route 添加访问验证，所有的 route 都需要附带 auth=<key> 的查询参数才能正常访问，否则直接返回 401 状态码。
+
+key 从环境变量 SERVICE_AUTH_KEY 读取，如果没有则默认生成 32 位包含大写字母和数字的随机字符作为 key，需要在启动的时候将 key 显示在启动日志中。
+
+再增加一个 version 路由 "/version"，返回当前 git 的 HEAD 提交 hash 和时间，这个路由不需要 auth。

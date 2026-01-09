@@ -14,6 +14,20 @@ const DOCS_DIR = path.join(__dirname, 'docs', 'domain-list-community');
 const DOCS_REPO_URL = 'https://github.com/v2fly/domain-list-community.git';
 
 // -------------------------------------------------------------------------
+// Authentication Logic
+// -------------------------------------------------------------------------
+function generateAuthKey(length = 32) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+const AUTH_KEY = process.env.SERVICE_AUTH_KEY || generateAuthKey();
+
+// -------------------------------------------------------------------------
 // Git Update Logic
 // -------------------------------------------------------------------------
 
@@ -66,6 +80,37 @@ setInterval(() => {
 // -------------------------------------------------------------------------
 // Routes
 // -------------------------------------------------------------------------
+
+// Version Route (No Auth)
+app.get('/version', (req, res) => {
+    exec('git rev-parse HEAD && git show -s --format=%ci HEAD', (err, stdout) => {
+        if (err) {
+            console.error('[Version] Git command failed:', err.message);
+            // Fallback if git fails (e.g. no git installed or not a repo)
+            return res.json({
+                error: 'Failed to retrieve version info',
+                details: err.message
+            });
+        }
+        const [hash, date] = stdout.trim().split('\n');
+        res.json({
+            commit: hash,
+            date: date
+        });
+    });
+});
+
+// Middleware for Authentication
+app.use((req, res, next) => {
+    // Skip auth for version route (already handled, but good safety check if reordered)
+    if (req.path === '/version') return next();
+
+    const providedKey = req.query.auth;
+    if (providedKey !== AUTH_KEY) {
+        return res.status(401).send('401 Unauthorized');
+    }
+    next();
+});
 
 app.get('/geosite/:name.list', (req, res) => {
     const { name } = req.params;
@@ -219,4 +264,7 @@ app.get('/sub', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Mihomo2Loon server listening at http://localhost:${port}`);
+    console.log(`---------------------------------------------------`);
+    console.log(`Auth Key: ${AUTH_KEY}`);
+    console.log(`---------------------------------------------------`);
 });
