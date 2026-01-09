@@ -1,7 +1,33 @@
-#!/bin/sh
+#!/bin/bash
 
-sudo docker stop mihomo2loon
+BASE_URL=""
+AUTH_KEY=""
+
+# Parse arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --base-url) BASE_URL="$2"; shift ;;
+        --auth-key) AUTH_KEY="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+# Build Docker args
+DOCKER_ENV_ARGS=""
+if [ -n "$BASE_URL" ]; then
+    DOCKER_ENV_ARGS="$DOCKER_ENV_ARGS -e SERVICE_BASE_URL=$BASE_URL"
+fi
+if [ -n "$AUTH_KEY" ]; then
+    DOCKER_ENV_ARGS="$DOCKER_ENV_ARGS -e SERVICE_AUTH_KEY=$AUTH_KEY"
+fi
+
+echo "Deploying Mihomo2Loon..."
+echo "Base URL: ${BASE_URL:-"(default)"}"
+echo "Auth Key: ${AUTH_KEY:-"(generated)"}"
+
+sudo docker stop mihomo2loon 2>/dev/null
 sudo docker build -t mihomo2loon .
-sudo docker rm mihomo2loon
-sudo docker run -d --restart=always --name mihomo2loon -p 25500:8080 mihomo2loon
-sudo docker logs mihomo2loon
+sudo docker rm mihomo2loon 2>/dev/null
+sudo docker run -d --restart=always --name mihomo2loon -p 25500:8080 $DOCKER_ENV_ARGS mihomo2loon
+sudo docker logs -f mihomo2loon
