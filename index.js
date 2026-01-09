@@ -17,7 +17,7 @@ const DOCS_REPO_URL = 'https://github.com/v2fly/domain-list-community.git';
 // Authentication Logic
 // -------------------------------------------------------------------------
 function generateAuthKey(length = 32) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
