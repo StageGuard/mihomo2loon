@@ -90,20 +90,24 @@ DOMAIN,google.com
 现在请你将所有的 GEOSITE 规则移到 [Remote Rule] 中.
 假设我的 mihomo 有以下配置:
 
+```yaml
 rules:
     - 'GEOSITE,category-ads-all,🛑 广告拦截'
     - 'GEOSITE,anthropic,💬 AI 服务'
     - 'GEOSITE,youtube,📹 油管视频'
     - 'GEOSITE,geolocation-cn,🔒 国内服务'
     - 'GEOSITE,geolocation-!cn,🌐 非中国'
+```
 
 那么生成的 loon 配置文件中的 [Remote Rule] 中我期望是:
 
+```ini
 <BaseURL>/geosite/category-ads-all.list,policy=🛑 广告拦截,enabled=true
 <BaseURL>/geosite/anthropic.list,policy=💬 AI 服务,enabled=true
 <BaseURL>/geosite/youtube.list,policy=📹 油管视频,enabled=true
 <BaseURL>/geosite/geolocation-cn.list,policy=🔒 国内服务,enabled=true
 <BaseURL>/geosite/geolocation-!cn.list,policy=🌐 非中国,enabled=true
+```
 
 这样就将冗长的 geosite 规则移到了远程规则中, 从而减小了配置文件的大小.
 
@@ -133,16 +137,20 @@ What about security of route /geosite/:name.list .What will happened if I get /g
 
 插件的信息如下：
 
+```ini
 #!name= geosite-{name}
 #!desc= Plugin for flatten geosite rules in DNS nameserver-policy of mihomo.
 #!author= {host} -> 这里填 server host
 #!homepage= https://github.com/StageGuard/mihomo2loon
 #!icon= https://avatars.githubusercontent.com/u/84378451
 #!tag = mihomo,geosite
+```
 
 另外请注意 mihomo DNS 配置中的 nameserver-policy, geosite 规则支持多个, 例如
 
+```
 'geosite:cn,private': ['https://120.53.53.53/dns-query', 'https://223.5.5.5/dns-query'], 
+```
 
 表示 cn 规则和 private 规则使用这个 DNS collection, 规则用逗号隔开.
 
