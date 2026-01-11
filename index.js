@@ -27,7 +27,7 @@ function generateAuthKey(length = 32) {
 
 const AUTH_KEY = process.env.SERVICE_AUTH_KEY || generateAuthKey();
 const BASE_URL = process.env.SERVICE_BASE_URL;
-const APPEND_AUTH_KEY = process.env.APPEND_AUTH_KEY == 'true';
+const APPEND_AUTH_KEY = process.env.APPEND_AUTH_KEY == 'false' ? false : true;
 
 // -------------------------------------------------------------------------
 // Git Update Logic
