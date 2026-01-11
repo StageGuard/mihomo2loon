@@ -2,12 +2,14 @@
 
 BASE_URL=""
 AUTH_KEY=""
+APPEND_AUTH_KEY="true"
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --base-url) BASE_URL="$2"; shift ;;
         --auth-key) AUTH_KEY="$2"; shift ;;
+        --dont-append-auth-key) APPEND_AUTH_KEY="false"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -20,6 +22,9 @@ if [ -n "$BASE_URL" ]; then
 fi
 if [ -n "$AUTH_KEY" ]; then
     DOCKER_ENV_ARGS="$DOCKER_ENV_ARGS -e SERVICE_AUTH_KEY=$AUTH_KEY"
+fi
+if [ -n "$APPEND_AUTH_KEY" ]; then
+    DOCKER_ENV_ARGS="$DOCKER_ENV_ARGS -e APPEND_AUTH_KEY=$APPEND_AUTH_KEY"
 fi
 
 echo "Deploying Mihomo2Loon..."
